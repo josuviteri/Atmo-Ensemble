@@ -93,3 +93,44 @@ To address the feasibility of running models on low-power edge sensors, we compa
 Previous community approaches utilized Logistic Regression, SVM, and GBM, with Decision Trees achieving the best results (~0.95 F1 score). This project aims to surpass these results using advanced ensemble techniques while providing deeper research insights.
 
 ---
+
+
+### Project Structure
+
+```text
+atmo-ensemble/
+├── README.md                  # Project overview and research goals
+├── requirements.txt           # Python dependencies 
+├── data/
+│   ├── raw/                   # Original dataset (5000 samples)
+│   ├── processed/             # Cleaned data, imputed versions, and splits
+│   └── external/              # Synthetic data generated via SMOTE/RUS
+├── notebooks/                 # Jupyter notebooks for specific research proposals
+│   ├── 01_eda_and_pca.ipynb            # Feature extraction & correlation analysis
+│   ├── 02_bagging_vs_boosting.ipynb    # Noise simulation & architecture comparison
+│   ├── 03_ordinal_ensembles.ipynb      # Frank & Hall and Regressor approaches
+│   ├── 04_imbalanced_learning.ipynb    # SMOTE-Boost, RUSBoost, Cost-Sensitive
+│   ├── 05_semi_supervised.ipynb        # Active learning experiments
+│   ├── 06_edge_efficiency.ipynb        # Light vs. Heavy models (inference time)
+│   └── 07_xai_interpretability.ipynb   # SHAP plots and feature interactions
+├── src/                       # Source code for reproducible experiments
+│   ├── __init__.py
+│   ├── data/
+│   │   ├── make_dataset.py    # Scripts to download and clean data
+│   │   └── corruption.py      # Simulating sensor failure/noise (Proposal 1.3 & 1.5.3)
+│   ├── features/
+│   │   ├── pca_reducer.py     # PCA implementation
+│   │   └── ordinal_encoder.py # Custom ordinal mappings
+│   ├── models/
+│   │   ├── custom_loss.py     # Cost-sensitive loss functions (Proposal 1.5.2)
+│   │   ├── ordinal_wrapper.py # Wrapper for Regressor-based classification
+│   │   └── ensemble_builder.py# Helper to build Stacking/Voting classifiers
+│   └── visualization/
+│       └── plot_metrics.py    # Confusion matrices and SHAP visualization
+├── results/                   # Generated artifacts
+│   ├── figures/               # SHAP plots, degradation curves, confusion matrices
+│   └── metrics/               # CSVs comparing F1-score, Inference Time, Model Size
+└── reports/
+    └── team10_project_proposal.pdf  # Original proposal document
+
+```
