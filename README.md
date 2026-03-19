@@ -15,7 +15,7 @@ The objective of this initiative is to research ensemble machine learning models
 
 The dataset consists of 5000 samples capturing critical environmental and demographic factors.
 
-**Input Features:** Temperature, Humidity, , , , , CO, Proximity to Industrial Areas, and Population Density.
+**Input Features:** Temperature, Humidity, PM2.5,PM10,NO2,SO2,CO, Proximity to Industrial Areas, and Population Density.
 
 
 **Target Variable:** Air Quality Levels (Ordinal).
@@ -99,38 +99,27 @@ Previous community approaches utilized Logistic Regression, SVM, and GBM, with D
 
 ```text
 atmo-ensemble/
-├── README.md                  # Project overview and research goals
-├── requirements.txt           # Python dependencies 
-├── data/
-│   ├── raw/                   # Original dataset (5000 samples)
-│   ├── processed/             # Cleaned data, imputed versions, and splits
-│   └── external/              # Synthetic data generated via SMOTE/RUS
-├── notebooks/                 # Jupyter notebooks for specific research proposals
-│   ├── 01_eda_and_pca.ipynb            # Feature extraction & correlation analysis
-│   ├── 02_bagging_vs_boosting.ipynb    # Noise simulation & architecture comparison
-│   ├── 03_ordinal_ensembles.ipynb      # Frank & Hall and Regressor approaches
-│   ├── 04_imbalanced_learning.ipynb    # SMOTE-Boost, RUSBoost, Cost-Sensitive
-│   ├── 05_semi_supervised.ipynb        # Active learning experiments
-│   ├── 06_edge_efficiency.ipynb        # Light vs. Heavy models (inference time)
-│   └── 07_xai_interpretability.ipynb   # SHAP plots and feature interactions
-├── src/                       # Source code for reproducible experiments
-│   ├── __init__.py
-│   ├── data/
-│   │   ├── make_dataset.py    # Scripts to download and clean data
-│   │   └── corruption.py      # Simulating sensor failure/noise (Proposal 1.3 & 1.5.3)
-│   ├── features/
-│   │   ├── pca_reducer.py     # PCA implementation
-│   │   └── ordinal_encoder.py # Custom ordinal mappings
-│   ├── models/
-│   │   ├── custom_loss.py     # Cost-sensitive loss functions (Proposal 1.5.2)
-│   │   ├── ordinal_wrapper.py # Wrapper for Regressor-based classification
-│   │   └── ensemble_builder.py# Helper to build Stacking/Voting classifiers
-│   └── visualization/
-│       └── plot_metrics.py    # Confusion matrices and SHAP visualization
-├── results/                   # Generated artifacts
-│   ├── figures/               # SHAP plots, degradation curves, confusion matrices
-│   └── metrics/               # CSVs comparing F1-score, Inference Time, Model Size
-└── reports/
-    └── team10_project_proposal.pdf  # Original proposal document
-
+├── data
+│   └── updated_pollution_dataset.csv
+├── LICENSE
+├── notebooks
+│   ├── 00_baselines.ipynb
+│   ├── 01_ensemble_learning.ipynb
+│   ├── 02_ordinal_ensembles.ipynb
+│   ├── 03_imbalanced.ipynb
+│   ├── 04_semi_supervised.ipynb
+│   └── 05_edge.ipynb
+├── NOTICE
+├── README.md
+├── reports
+│   ├── research_proposal
+│   |   └── atmo_ensemble_proposal.pdf
+│   └── research_conclusions
+│       └── atmo_ensemble_research.pdf
+├── requirements.txt
+└── src
+    └── models
+        ├── ensemble_model.pkl
+        ├── heavy_ensemble_model.pkl
+        └── light_ensemble_model.pkl
 ```
