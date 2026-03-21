@@ -1,0 +1,114 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{geometry} 
+\usepackage{parskip} 
+\usepackage[version=4]{mhchem}
+\usepackage{amsmath}
+
+
+\geometry{
+	top=2.5cm,
+	bottom=2.5cm,
+	left=2.5cm,
+	right=2.5cm
+}
+
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=blue,
+	pdftitle={Atmo-Ensemble Proposal},
+}
+
+\title{\textbf{Atmo-Ensemble}\\Ensemble ML Research Conclusion for Air Quality Multi-Classification}
+\author{Josu Viteri \and Gotzon Viteri \and Iker Dominguez}
+\date{March 2026}
+
+\begin{document}
+	
+	\maketitle
+	
+	\begin{abstract}
+		% Abstract
+	\end{abstract}
+	
+	\section{Research Conclusions}
+	
+	% Purpose and expectatives
+	
+	\subsection{PCA and Dataset Feature Extraction}
+		\textbf{Does studying correlated environmental features through principal component analysis (PCA) and other feature extraction techniques improve the robustness and efficiency of ensemble classifiers, or are non-linear feature interactions found by the models alone?}
+		
+			% Conclusion
+
+	
+	\subsection{Feature Importance and Interactions (XAI)}
+	\label{subsec:xai}
+	XAI context
+	
+	\subsection{Benchmark Performance}
+	\textbf{Comparison of Bagging and Boosting}
+	
+	\textbf{Does the variance-reduction of parallel ensembles offer better generalization on noisy sensor data compared to the bias-reduction of sequential ensembles?}
+	
+	% Conclusion
+	
+	
+	\subsection{Handling Ordinality}
+	\textbf{Does encoding ordinality via Regressor-based Ensembles outperform standard Multiclass Classifiers in Air Quality Assessment?}
+
+	% Conclusion
+	
+	
+	\subsection{Imbalanced Learning}
+	\subsubsection{Handling Rare Events}
+	\textit{"Evaluating the efficacy of Hybrid Sampling-Ensemble methods (SMOTE-Boost vs. RUSBoost) in detecting rare Hazardous Air Quality events."}
+	
+	% Conclusion
+	
+	\subsubsection{Cost-Sensitive Learning vs. Resampling Methods}
+	% Conclusion
+	
+	
+	
+	\subsubsection{Robustness to Missing Data (Simulating Broken Sensors)}
+	% Conclusion
+	
+	\subsection{Semi-Supervised Learning}
+	% Conclusion
+	
+	\subsection{Efficiency vs. Accuracy}
+	\label{subsec:efficiency}
+	\subsubsection{Trade-offs between Computational Cost and Classification Performance}
+	\textit{Can lightweight ensembles replace deep stacking for edge-based Air Quality Monitoring?}
+	
+	% Conclusion
+	
+	
+	\subsubsection{Conformal Prediction}
+	% Conclusion
+	
+	\section{Limitations and Discovery}
+	% Most common problems found
+
+		\subsection{Limitations and Data Drift}
+		% How the model might degrade over seasons or due to sensor aging.
+	
+
+	\section{Ethical and Social Implications}
+	% How our problem helps society
+		
+		\subsection{Risk Assesment and Public Health
+		% Impact of False Negatives in hazardous event detection.}
+
+	
+	\section{Summary and Next Steps}
+	% Summary and next steps
+	
+\end{document}
