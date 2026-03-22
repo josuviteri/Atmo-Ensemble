@@ -86,16 +86,17 @@
 	\textit{Pregunta}
 
 	The primary goal of the experiment was to explore ways to reduce the time and cost associated with manually labeling a complete dataset by evaluating semi-supervised learning techniques. Specifically, the tasks included:
+	\begin{itemize}
+	\item \textbf{Simulating Unlabeled Data:} We partially deleted the target feature (Air Quality) in varying proportions across classes to mimic a real-world scenario where only a limited labeling budget is available.
 	
-	Simulating Unlabeled Data: We partially deleted the target feature (Air Quality) in varying proportions across classes to mimic a real-world scenario where only a limited labeling budget is available.
+	\item \textbf{Comparing Masking Strategies:} We implemented two different strategies for leaving data labeled:
 	
-	Comparing Masking Strategies: We implemented two different strategies for leaving data labeled:
+	\item \textbf{Passive Semi-Supervision:} Pseudo-randomly masking target samples while entirely ignoring the class distribution.
 	
-	Passive Semi-Supervision: Pseudo-randomly masking target samples while entirely ignoring the class distribution.
+	\item \textbf{Active Semi-Supervision:} Masking samples in a way that leaves the same amount of unmasked (labeled) samples from each class.
 	
-	Active Semi-Supervision: Masking samples in a way that leaves the same amount of unmasked (labeled) samples from each class.
-	
-	Evaluating Models: We ran active and passive semi-supervised learning processes using models like Label Spreading and Self-Training (with a Random Forest base classifier). The unlabeled samples were treated as the test set to check how well the models could "self-train" and predict the missing labels compared to a supervised baseline.
+	\item \textbf{Evaluating Models:} We ran active and passive semi-supervised learning processes using models like Label Spreading and Self-Training (with a Random Forest base classifier). The unlabeled samples were treated as the test set to check how well the models could "self-train" and predict the missing labels compared to a supervised baseline.
+	\end{itemize}
 	
 	The experiment yielded several key insights regarding the effectiveness of these semi-supervised methods:
 	
