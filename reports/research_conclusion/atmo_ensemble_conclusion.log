@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.2.20)  21 MAR 2026 12:53
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.2.20)  22 MAR 2026 13:43
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -468,31 +468,35 @@ e
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf/fonts/enc/
-dvips/cm-super/cm-super-t1.enc}])
-Runaway argument?
-{Risk Assesment and Public Health \par \par \section {Summary and Nex\ETC.
-! File ended while scanning use of \@xdblarg.
-<inserted text> 
-                \par 
-<*> atmo_ensemble_conclusion.tex
-                                
-I suspect you have forgotten a `}', causing me
-to read past where you wanted me to stop.
-I'll try to recover; but if the error is serious,
-you'd better type `E' or `X' now and fix your file.
-
-! Emergency stop.
-<*> atmo_ensemble_conclusion.tex
-                                
-*** (job aborted, no legal \end found)
-
- 
+dvips/cm-super/cm-super-t1.enc}] [2{/usr/share/texmf/fonts/enc/dvips/cm-super/c
+m-super-ts1.enc}] [3] [4] (./atmo_ensemble_conclusion.aux)
+ ***********
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-22>
+ ***********
+Package rerunfilecheck Info: File `atmo_ensemble_conclusion.out' has not change
+d.
+(rerunfilecheck)             Checksum: 45A846A32133DD0E71977282AE8E8B8D;3418.
+ ) 
 Here is how much of TeX's memory you used:
- 12190 strings out of 476047
- 198306 string characters out of 5792075
+ 12207 strings out of 476047
+ 198587 string characters out of 5792075
  1932975 words of memory out of 5000000
- 34044 multiletter control sequences out of 15000+600000
- 568145 words of font info for 53 fonts, out of 8000000 for 9000
+ 34053 multiletter control sequences out of 15000+600000
+ 568482 words of font info for 54 fonts, out of 8000000 for 9000
  85 hyphenation exceptions out of 8191
- 75i,6n,79p,547b,453s stack positions out of 10000i,1000n,20000p,200000b,200000s
-!  ==> Fatal error occurred, no output PDF file produced!
+ 75i,6n,79p,851b,453s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/share/texmf/fonts/type1/public/cm-super/sfbx1095.pfb></usr/share/texmf/
+fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf/fonts/type1/public/c
+m-super/sfbx1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1728.pfb
+></usr/share/texmf/fonts/type1/public/cm-super/sfbx2074.pfb></usr/share/texmf/f
+onts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf/fonts/type1/public/cm
+-super/sfrm1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm2074.pfb>
+</usr/share/texmf/fonts/type1/public/cm-super/sfti1200.pfb>
+Output written on atmo_ensemble_conclusion.pdf (4 pages, 188787 bytes).
+PDF statistics:
+ 145 PDF objects out of 1000 (max. 8388607)
+ 118 compressed objects within 2 object streams
+ 21 named destinations out of 1000 (max. 500000)
+ 129 words of extra memory for PDF output out of 10000 (max. 10000000)
+

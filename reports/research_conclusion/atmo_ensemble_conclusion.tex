@@ -43,7 +43,7 @@
 	% Purpose and expectatives
 	
 	\subsection{PCA and Dataset Feature Extraction}
-		\textbf{Does studying correlated environmental features through principal component analysis (PCA) and other feature extraction techniques improve the robustness and efficiency of ensemble classifiers, or are non-linear feature interactions found by the models alone?}
+		\textit{Does studying correlated environmental features through principal component analysis (PCA) and other feature extraction techniques improve the robustness and efficiency of ensemble classifiers, or are non-linear feature interactions found by the models alone?}
 		
 			% Conclusion
 
@@ -55,20 +55,20 @@
 	\subsection{Benchmark Performance}
 	\textbf{Comparison of Bagging and Boosting}
 	
-	\textbf{Does the variance-reduction of parallel ensembles offer better generalization on noisy sensor data compared to the bias-reduction of sequential ensembles?}
+	\textit{Does the variance-reduction of parallel ensembles offer better generalization on noisy sensor data compared to the bias-reduction of sequential ensembles?}
 	
 	% Conclusion
 	
 	
 	\subsection{Handling Ordinality}
-	\textbf{Does encoding ordinality via Regressor-based Ensembles outperform standard Multiclass Classifiers in Air Quality Assessment?}
+	\textit{Does encoding ordinality via Regressor-based Ensembles outperform standard Multiclass Classifiers in Air Quality Assessment?}
 
 	% Conclusion
 	
 	
 	\subsection{Imbalanced Learning}
 	\subsubsection{Handling Rare Events}
-	\textit{"Evaluating the efficacy of Hybrid Sampling-Ensemble methods (SMOTE-Boost vs. RUSBoost) in detecting rare Hazardous Air Quality events."}
+	\textit{Evaluating the efficacy of Hybrid Sampling-Ensemble methods (SMOTE-Boost vs. RUSBoost) in detecting rare Hazardous Air Quality events.}
 	
 	% Conclusion
 	
@@ -81,19 +81,77 @@
 	% Conclusion
 	
 	\subsection{Semi-Supervised Learning}
-	% Conclusion
+	\textbf{Subtitle}
 	
-	\subsection{Efficiency vs. Accuracy}
+	\textit{Pregunta}
+
+	The primary goal of the experiment was to explore ways to reduce the time and cost associated with manually labeling a complete dataset by evaluating semi-supervised learning techniques. Specifically, the tasks included:
+	
+	Simulating Unlabeled Data: We partially deleted the target feature (Air Quality) in varying proportions across classes to mimic a real-world scenario where only a limited labeling budget is available.
+	
+	Comparing Masking Strategies: We implemented two different strategies for leaving data labeled:
+	
+	Passive Semi-Supervision: Pseudo-randomly masking target samples while entirely ignoring the class distribution.
+	
+	Active Semi-Supervision: Masking samples in a way that leaves the same amount of unmasked (labeled) samples from each class.
+	
+	Evaluating Models: We ran active and passive semi-supervised learning processes using models like Label Spreading and Self-Training (with a Random Forest base classifier). The unlabeled samples were treated as the test set to check how well the models could "self-train" and predict the missing labels compared to a supervised baseline.
+	
+	The experiment yielded several key insights regarding the effectiveness of these semi-supervised methods:
+	
+	\begin{itemize}
+		\item \textbf{Self-training was consistently the strongest approach} comparing it to label spreading across all ratios, specially when labeled data was low (1 to 10\%), reaching the best accuracy and macro F1 in almost every train/test distribution.
+
+		\item \textbf{Passive masking usually matched or outperformed active masking} for self training, this tells us that mantaining the original proportions in labeled samples worked well for our problem.
+
+		\item \textbf{Active masking helped label spreading in low labeled sample proportion sets}, but this advantage was not mantained as the labeled sample ammount increased, still underperforming against self training.
+
+		\item \textbf{More labeled data generally improved all methods}, but we need to take into account that those cases leave us with smaller test sets, with less samples to miss, and probably the majority of the set being part of the majority class, but good scores in macro f1 tell us that if a test sample was part of the minority class, it was correclty predicted too, therefore it worked well overall, even if we should take those metrics carefully.
+	
+	\end{itemize}
+	
+	If the labeling budget is limited, using just 30\% to 50\% labeled data already provides strong model performance. Consequently, full dataset manual labeling can be avoided with only a minimal loss in accuracy and F1 score.
+
+	
+	
+	\subsection{Efficiency vs. Accuracy in Edge Use Cases}
 	\label{subsec:efficiency}
-	\subsubsection{Trade-offs between Computational Cost and Classification Performance}
+	\textbf{Trade-offs between Computational Cost and Classification Performance}
+	
+	
 	\textit{Can lightweight ensembles replace deep stacking for edge-based Air Quality Monitoring?}
 	
-	% Conclusion
+	The primary goal of the experiment was to evaluate the trade-offs between computational cost, model size, and classification performance in the context of ``edge machine learning.'' Because air quality monitoring is typically performed on small, low-power edge devices in the city, deploying a massive ensemble model could be impractical for battery-powered chips.
+	
+	The tasks included:
+	
+	\begin{itemize}
+		\item \textbf{Comparing Heavy vs. Light Models:} We aimed to find the frontier between model size and performance by comparing a ``Heavy Model'' (a 3-layer Stacking Classifier with XGBoost, Random Forest, and SVM) against a ``Light Model'' (a highly pruned Decision Tree).
+	
+		\item \textbf{Measuring Operational Metrics:} Rather than relying solely on traditional metrics like Accuracy and F1-Score, we explicitly measured Inference Time (in milliseconds) and Model Size (in Megabytes), as they are values that have real weight when designing an edge AI soution.
+	
+		\item \textbf{Addressing Uncertainty (Conformal Prediction):} Since predicting air quality incorrectly (e.g., classifying ``Hazardous'' air as merely ``Moderate'') can lead to serious health problems, the notebook evaluated how certain the model was about its predictions. Using MAPIE (Model Agnostic Prediction Interval Estimator), we dealt with critical errors by computing coverage and average prediction set sizes for the different classes.
+	\end{itemize}
 	
 	
-	\subsubsection{Conformal Prediction}
-	% Conclusion
+	The experiment provided crucial insights into both the deployment viability and the reliability of the models:
 	
+	\begin{itemize}
+	\item \textbf{Efficiency vs. Accuracy Trade-off:} While the Stacking Classifier (Heavy Model) achieved higher Accuracy (\~{}0.95) and Macro F1-scores (\~{}0.93) than the optimized Decision Tree (\~{}0.91 Accuracy, \~{}0.87 Macro F1), the Heavy Model was severely penalized in operational cost. It was over 826 times larger in file size (MB) and more than 120 times slower overall, during inference time compared to the lightweight Decision Tree.
+	
+	\item \textbf{Dangerous Critical Class Coverage:} During the conformal prediction analysis, the model exhibited less than 0.90 coverage on the critical ``Hazardous'' class. Specifically, the true label was missing from the prediction set roughly 32\% of the time, which is considered a dangerous failure rate for the most health-critical class.
+	
+	\item \textbf{Empty Prediction Sets:} The analysis revealed an average set size of less than 1 (or 100\%), meaning that some samples were receiving empty prediction sets where no class was included at all, an anomaly that should never occur in a real world scenario.
+	
+	\end{itemize}
+	As we expected, the heavy model took more time to draw a conclusion comparing it to the decision tree, but the target class is not correctly predicted by the smaller model in the specific sample randomly selected to test, even if it only misses the grade of the air toxicity by 1. In a real world scenario, where the minority class is the most dangerous one, missclassifying it, even if only by one space difference, can cause enormous damages, even if the results are impresive given the size difference of 17kB against 13MB. Depending in the hardware, the smaller model could do the job, but if the use case  required it, the heavy model would bring more accurate results, given we optimized the hyperparameters to take the minority class more into account (with the Macro F1 Score focused optuna).
+	
+	In the case of joining classes in the predictions by conformal prediction techniques, the models demonstrated good softmax values in the majority classes, but failed to output reliable values for the minority classes (where the system was previously thought to potentially benefit from joining classes).
+	 
+	Therefore, even if the models had small issues when predicting the minority class, the misclassifications being just 1 class appart from the true value, we believe that these are great results given the weights and the inference time of the models, heavy and small, and depending on the hardware used for deployment, we could select the most suitable one.
+	
+
+
 	\section{Limitations and Discovery}
 	% Most common problems found
 
@@ -104,7 +162,7 @@
 	\section{Ethical and Social Implications}
 	% How our problem helps society
 		
-		\subsection{Risk Assesment and Public Health
+		\subsection{Risk Assesment and Public Health}
 		% Impact of False Negatives in hazardous event detection.}
 
 	
