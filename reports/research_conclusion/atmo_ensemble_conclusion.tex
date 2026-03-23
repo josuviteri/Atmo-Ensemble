@@ -4,6 +4,8 @@
 \usepackage[T1]{fontenc}
 \usepackage{hyperref}
 \usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{array}
 \usepackage{geometry} 
 \usepackage{parskip} 
 \usepackage[version=4]{mhchem}
@@ -61,10 +63,135 @@
 	
 	
 	\subsection{Handling Ordinality}
-	\textit{Does encoding ordinality via Regressor-based Ensembles outperform standard Multiclass Classifiers in Air Quality Assessment?}
-
-	% Conclusion
+	\textit{Does encoding ordinality via Regressor-based Ensembles outperform standard Multi-class Classifiers in Air Quality Assessment?}
 	
+	Our target variable — Good, Moderate, Poor, Hazardous — is not a
+	nominal class. It carries an inherent order:
+	
+	\[
+	\text{Good} < \text{Moderate} < \text{Poor} < \text{Hazardous}
+	\]
+	
+	Standard multi-class classification ignores this structure entirely, treating a prediction of Good when the true label is Hazardous as an error equivalent in severity to	predicting Moderate. In a real-world air quality context, these are fundamentally different	mistakes.
+	
+	\bigskip
+	
+	\begin{center}
+		\begin{tabular}{>{\bfseries}lp{10cm}}
+			\toprule
+			Approach & Description \\
+			\midrule
+			Standard Multi-class &
+			Treats the 4 classes as independent nominal labels. No ordering assumed. \\[0.5em]
+			Frank \& Hall &
+			Decomposes the problem into 3 binary classifiers: $P(y > \text{Good})$,
+			$P(y > \text{Moderate})$, $P(y > \text{Poor})$. Outputs are combined to recover the
+			4-class distribution while preserving ordinal structure. \\[0.5em]
+			Regressor Ensemble &
+			Trains an XGBoost Regressor on the numeric labels $\{0,1,2,3\}$, then maps the
+			continuous output back to the nearest class via tuned thresholds. \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	
+	\bigskip
+	
+	All three models are fine-tuned with Optuna + MedianPruner. Evaluation uses both
+	standard metrics (Accuracy, F1, MCC) and ordinal-aware metrics that penalise
+	predictions proportionally to how far off they are.
+	
+	% ─────────────────────────────────────────────────────────────────────────────
+	
+	\section{Results Summary}
+	
+	\subsection{What the metrics tell}
+	
+	The comparison uses both standard metrics like Accuracy, F1, and MCC, and ordinal-aware metrics that measure the magnitude of errors, not just not just if a prediction is predicting the right or wrong value
+	
+	The key metrics to focus on are:
+	
+	\begin{itemize}
+		\item \textbf{QWK} (Quadratic Weighted Kappa): the primary ordinal metric; higher values
+		mean errors are concentrated near the diagonal.
+		\item \textbf{MAE}: lower is better; tells you on average how many steps away predictions
+		land from the true label.
+		\item \textbf{Severe Error Rate}: the most safety-critical metric; a \texttt{Good}
+		predicted as \texttt{Hazardous} is a worse mistake than a \texttt{Good} predicted
+		as \texttt{Moderate}.
+		\item \textbf{Adjacent Accuracy}: an ordinal alternative to accuracy. A prediction that is
+		off by one class still scores.
+	\end{itemize}
+	
+	\subsection{What the results show}
+	
+	All three models achieve extremely high overall accuracy (between 94\% and 95\%) with no severe errors on the clean dataset, which reflects a synthetic nature of the data, which tells us that class boundaries are well-separated in the original feature space.
+	
+	The ordinal methods do not outperform the standard classifier by a large margin on clean data,
+	which is mainly what we expected. Because classes are easily separable, there is little
+	ordinal structure to exploit.
+	
+	\subsection{Frank \& Hall}
+	
+	The monotonicity violation rate is just 0.10\%, which means the binary classifiers are producing consistent probabilities almost every time. The ordinal decomposition assumption holds well on this data, so the enforcement step is rarely needed.
+	
+	\subsection{Regressor Ensemble}
+	
+	The regressor takes a different approach, instead of decomposing the problem into binary decisions, it learns a continuous pollution score and uses Optuna-tuned thresholds to map it back to classes. This makes it more flexible and less dependent.
+	
+	\subsection{Conclusion}
+	
+	On clean data the three models are essentially tied, but the \textbf{Frank \& Hall} being a little bit better. The question is what would happen if the data gets harder, if we have more examples or if the values were more overlapped. Would ordinal methods hold up better under class overlap? That is what we have done in the next part of the notebook.
+	
+	
+	\section{Robustness Analysis}
+	
+	To investigate the effect of class overlap, isotropic Gaussian noise at varying levels
+	$\sigma \in \{0.0, 1.0, 1.5, 3.0\}$ is injected into the feature space, and all three
+	models are re-evaluated at each noise level.
+	
+	\subsection{Results across noise levels}
+	
+	As we can see in the results, as noise increases all three models perform worse, dropping from 94-95\% accuracy at $\sigma = 0$
+	down to 83--85\% at $\sigma = 3.0$. That part is expected and nearly the same across all the models and different noise levels. The more interesting differences show up in the ordinal metrics.
+	
+	At $\sigma = 1.0$, all three models still produce zero severe errors, and performance is very close to the noise-less models QWK around 0.95 with Standard Multiclass slightly ahead (0.9552 vs 0.9539 and 0.9534). No method is clearly better at this noise level, as it is the most close one with the original data.
+	
+	At $\sigma = 1.5$, Frank \& Hall starts to be the best at every metric, but not really ahead of the other models. The ordinal models are the only ones with zero severe errors, and F\&H leads on every ordinal-based metric. This seems to be the noise level where encoding ordinality starts to affect the results, but without a clear winner.
+	
+	At $\sigma = 3.0$, as we expected, all the metrics for the 3 models are worse, but still quite good. All three models produce the same severe error rate, so the ordinal advantage disappears under heavy noise. Frank \& Hall still leads slightly on QWK and MAE, but the gaps are still small. The Regressor Ensemble is the weakest model of the three at this high noise level.
+	
+	
+	\section{Conclusions}
+	
+	To summarise, on clean or little noisy data the three models are essentially almost the same, as they produce really high, but still similar results. At moderate noise Frank \& Hall is the most conservative, it avoids severe errors longer than the standard classifier and the regressor. At very high noise all methods converge and the ordinal advantage goes away. The Regressor Ensemble, despite being, in theory, the most flexible, does not outperform the other two under noise on this dataset. 
+	We also expected the results to be worse as we increased the noise level, but it hasn't been a clear winner between the three models. As a last conclusion, we can say that both three models have learnt the mathematical formula behind the classification of the air quality level, so there is not a clear outcome of which method is a better approach to this problem as well as there isn't a clear finding on if taking into account the ordinality matters.
+	
+	% ─────────────────────────────────────────────────────────────────────────────
+	
+	\section{Future Work}
+	
+	The following directions could deepen the analysis:
+	
+	\begin{itemize}
+		\item \textbf{Using real-world data}: validate on a real air quality dataset where class overlap
+		exists naturally rather than being artificially injected, with real outliers,
+		missing values, and realistic sensor characteristics.
+		
+		\item \textbf{Alternative ordinal methods}: explore frameworks with stronger theoretical
+		guarantees such as CORAL or proportional odds models as additional baselines.
+		
+		\item \textbf{Cost-sensitive training}: explicitly penalise severe errors during training
+		via a custom loss function, rather than only measuring them after all the process.
+		
+		\item \textbf{Threshold refinement}: investigate per-class or per-region threshold tuning
+		for the Regressor Ensemble, since the optimal separation between adjacent classes
+		may not be uniform across the feature space.
+		
+		\item \textbf{Realistic noise}: replace isotropic Gaussian noise with feature-specific
+		perturbations that reflect actual sensor degradation or miscalculation patterns.
+	\end{itemize}
+	
+	Ultimately, explicitly modelling the ordinal nature of air quality labels via the Frank \& Hall method yielded the most robust and safety-conscious predictive performance.	
 	
 	\subsection{Imbalanced Learning}
 	\subsubsection{Handling Rare Events}
