@@ -54,12 +54,30 @@
 	\label{subsec:xai}
 	XAI context
 	
-	\subsection{Benchmark Performance}
-	\textbf{Comparison of Bagging and Boosting}
+	\subsection{Ensemble Learning}
 	
 	\textit{Does the variance-reduction of parallel ensembles offer better generalization on noisy sensor data compared to the bias-reduction of sequential ensembles?}
 	
-	% Conclusion
+	\subsubsection{Overview of Evaluated Models}
+	To address this task, we built different ensemble learning based models and evaluated them to classify air quality into four categories: Good, Moderate, Poor, and Hazardous. The main focus was getting a final model able to correctly predict pollution. The evaluated models include:
+	\begin{itemize}
+		\item \textbf{Voting Ensembles}: Hard voting (majority) and Soft voting (average probability) combining Logistic Regression, Random Forest, and Support Vector Classifier.
+		\item \textbf{Parallel Ensembles (Variance-Reduction)}: Bagging (with replacement) and Pasting (without replacement) utilizing parallel training on data subsets.
+		\item \textbf{Sequential Ensembles (Bias-Reduction)}: Boosting methods like AdaBoost and Gradient Boosting, which use sequential training to correct prior errors.
+		\item \textbf{XGBoost}: A high-performance gradient boosting implementation featuring system optimization and regularization.
+		\item \textbf{Stacking Ensemble}: A multi-layer ensemble using a final meta-learner to blend predictions.
+	\end{itemize}
+	Because of the class imbalances in the dataset, special importance was given to the Macro F1-score alongside Accuracy, Weighted F1-Score, and the Matthews Correlation Coefficient (MCC).
+	
+	\subsubsection{Parallel vs. Sequential Ensembles Performance}
+	The parallel tree ensembles, Bagging and Pasting, demonstrated strong variance reduction, achieving Macro F1-scores of 0.9240 and 0.9204, respectively. Their out-of-bag (OOB) score of 0.9504 provided a reliable estimate of model performance. However, sequential ensembles, which focus on correcting the errors of prior models, ultimately outperformed them. 
+	
+	While the fine-tuned AdaBoost model reached a Macro F1 of 0.9209, Gradient Boosting achieved a higher Macro F1 of 0.9297, bypassing the parallel methods. Finally, XGBoost obtained the highest overall scores with an Accuracy of 0.9560, a Macro F1 of 0.9351, and an MCC of 0.9371. 
+	
+	\subsubsection{Key Insights and Conclusion}
+	Based on the gathered metrics, the bias-reduction approach of sequential ensembles offered better generalization on the sensor data compared to the variance-reduction of parallel ensembles. While bagging offered robustness and stability, the boosting methods, particularly XGBoost, provided the best predictive performance. 
+	
+	Despite the strong overall performance, a key challenge was class imbalance, specifically regarding the detection of the ``Hazardous'' class. All models exhibited lower recall for this minority category, though XGBoost detected the highest proportion of dangerous cases with a recall of 0.8712. This difficulty in detecting severe pollution cases highlights the need for further techniques such as cost-sensitive learning prior to real-world deployment. Ultimately, XGBoost was selected and saved as the final model for this task.
 	
 	
 	\subsection{Handling Ordinality}
@@ -102,9 +120,9 @@
 	
 	% ─────────────────────────────────────────────────────────────────────────────
 	
-	\section{Results Summary}
+
 	
-	\subsection{What the metrics tell}
+	\subsubsection{What the metrics tell}
 	
 	The comparison uses both standard metrics like Accuracy, F1, and MCC, and ordinal-aware metrics that measure the magnitude of errors, not just not just if a prediction is predicting the right or wrong value
 	
@@ -122,7 +140,7 @@
 		off by one class still scores.
 	\end{itemize}
 	
-	\subsection{What the results show}
+	\subsubsection{What the results show}
 	
 	All three models achieve extremely high overall accuracy (between 94\% and 95\%) with no severe errors on the clean dataset, which reflects a synthetic nature of the data, which tells us that class boundaries are well-separated in the original feature space.
 	
@@ -130,26 +148,26 @@
 	which is mainly what we expected. Because classes are easily separable, there is little
 	ordinal structure to exploit.
 	
-	\subsection{Frank \& Hall}
+	\subsubsection{Frank \& Hall}
 	
 	The monotonicity violation rate is just 0.10\%, which means the binary classifiers are producing consistent probabilities almost every time. The ordinal decomposition assumption holds well on this data, so the enforcement step is rarely needed.
 	
-	\subsection{Regressor Ensemble}
+	\subsubsection{Regressor Ensemble}
 	
 	The regressor takes a different approach, instead of decomposing the problem into binary decisions, it learns a continuous pollution score and uses Optuna-tuned thresholds to map it back to classes. This makes it more flexible and less dependent.
 	
-	\subsection{Conclusion}
+	\subsubsection{Conclusion}
 	
 	On clean data the three models are essentially tied, but the \textbf{Frank \& Hall} being a little bit better. The question is what would happen if the data gets harder, if we have more examples or if the values were more overlapped. Would ordinal methods hold up better under class overlap? That is what we have done in the next part of the notebook.
 	
 	
-	\section{Robustness Analysis}
+	\subsubsection{Robustness Analysis}
 	
 	To investigate the effect of class overlap, isotropic Gaussian noise at varying levels
 	$\sigma \in \{0.0, 1.0, 1.5, 3.0\}$ is injected into the feature space, and all three
 	models are re-evaluated at each noise level.
 	
-	\subsection{Results across noise levels}
+	\subsubsection{Results across noise levels}
 	
 	As we can see in the results, as noise increases all three models perform worse, dropping from 94-95\% accuracy at $\sigma = 0$
 	down to 83--85\% at $\sigma = 3.0$. That part is expected and nearly the same across all the models and different noise levels. The more interesting differences show up in the ordinal metrics.
@@ -161,14 +179,14 @@
 	At $\sigma = 3.0$, as we expected, all the metrics for the 3 models are worse, but still quite good. All three models produce the same severe error rate, so the ordinal advantage disappears under heavy noise. Frank \& Hall still leads slightly on QWK and MAE, but the gaps are still small. The Regressor Ensemble is the weakest model of the three at this high noise level.
 	
 	
-	\section{Conclusions}
+	\subsubsection{Conclusions}
 	
 	To summarise, on clean or little noisy data the three models are essentially almost the same, as they produce really high, but still similar results. At moderate noise Frank \& Hall is the most conservative, it avoids severe errors longer than the standard classifier and the regressor. At very high noise all methods converge and the ordinal advantage goes away. The Regressor Ensemble, despite being, in theory, the most flexible, does not outperform the other two under noise on this dataset. 
 	We also expected the results to be worse as we increased the noise level, but it hasn't been a clear winner between the three models. As a last conclusion, we can say that both three models have learnt the mathematical formula behind the classification of the air quality level, so there is not a clear outcome of which method is a better approach to this problem as well as there isn't a clear finding on if taking into account the ordinality matters.
 	
 	% ─────────────────────────────────────────────────────────────────────────────
 	
-	\section{Future Work}
+	\subsubsection{Future Work}
 	
 	The following directions could deepen the analysis:
 	
@@ -192,20 +210,27 @@
 	\end{itemize}
 	
 	Ultimately, explicitly modelling the ordinal nature of air quality labels via the Frank \& Hall method yielded the most robust and safety-conscious predictive performance.	
-	
+
 	\subsection{Imbalanced Learning}
-	\subsubsection{Handling Rare Events}
-	\textit{Evaluating the efficacy of Hybrid Sampling-Ensemble methods (SMOTE-Boost vs. RUSBoost) in detecting rare Hazardous Air Quality events.}
 	
-	% Conclusion
+	\textit{Does the variance-reduction of parallel ensembles offer better generalization on noisy sensor data compared to the bias-reduction of sequential ensembles?}
 	
-	\subsubsection{Cost-Sensitive Learning vs. Resampling Methods}
-	% Conclusion
+	\subsubsection{Managing Class Imbalance}
+	An initial evaluation of the dataset's distribution confirmed a significant class imbalance. The critical "Hazardous" category was heavily underrepresented, making up only 10\% of the data. In contrast, the majority classes dominated the dataset, with the "Good" category at 40\%, "Moderate" at 30\%, and "Poor" at 20\%. This imbalance highlighted the necessity for specialized modeling approaches to ensure rare but dangerous air quality events are not ignored by the model.
+	
+	\subsubsection{Evaluation of Ensemble Methods}
+	Standard ensemble architectures, such as a baseline Random Forest, were compared against specialized methods tailored for imbalanced data, including Balanced Random Forest and RUSBoost. Imbalanced-data approaches showed mixed results: while they generally focused more on the minority class, aggressive undersampling in RUSBoost led to a reduction in overall model performance. Similarly, SMOTE-Boost struggled to maintain high accuracy on the majority classes. Ultimately, the Balanced Random Forest emerged as the strongest model in this category for accurately detecting the rare "Hazardous" cases without sacrificing too much generalized performance.
+	
+	\subsubsection{Algorithmic Modifications}
+	To further address the imbalance, a parallel approach to data resampling was tested using algorithmic modifications via cost-sensitive learning. This involved applying severity-based penalties for misclassifications, heavily penalizing the model for missing severe air quality events. The cost-sensitive Random Forest made good use of these penalties, successfully boosting its "Hazardous" detection rates. However, despite these improvements, it still remained behind the Balanced Random Forest in overall effectiveness.
+	
+	\subsubsection{Robustness Testing for Missing Data}
+	To simulate realistic real-world sensor failure conditions, a 30\% sensor dropout was introduced to evaluate how well the algorithms could handle missing values (NaNs). In this scenario, XGBoost showcased a massive advantage due to its native capacity to handle missing data. Even with the 30\% data dropout, XGBoost maintained a recall rate for the "Hazardous" class above 90\%, significantly outperforming standard Random Forest pipelines that relied on traditional data imputation strategies.
+	
+	\subsubsection{Conclusion and key insights}
+	The research concludes that Balanced Random Forest and XGBoost stand out as ideal, complementary solutions for real-world air quality monitoring. Balanced Random Forest excels at navigating severe class imbalances to catch rare, hazardous events. Meanwhile, XGBoost guarantees reliable performance, robustness, and generalization when realistic sensor dropouts and missing data occur. Used in tandem, these models provide the necessary safety and resilience required for functional, real-world monitoring systems where detecting rare events and handling noisy data are equally vital.
 	
 	
-	
-	\subsubsection{Robustness to Missing Data (Simulating Broken Sensors)}
-	% Conclusion
 	
 	\subsection{Semi-Supervised Learning}
 	\textbf{Subtitle}
@@ -244,10 +269,12 @@
 	
 	\subsection{Efficiency vs. Accuracy in Edge Use Cases}
 	\label{subsec:efficiency}
-	\textbf{Trade-offs between Computational Cost and Classification Performance}
+
 	
 	
 	\textit{Can lightweight ensembles replace deep stacking for edge-based Air Quality Monitoring?}
+	
+	\subsubsection{Trade-offs between Computational Cost and Classification Performance}
 	
 	The primary goal of the experiment was to evaluate the trade-offs between computational cost, model size, and classification performance in the context of ``edge machine learning.'' Because air quality monitoring is typically performed on small, low-power edge devices in the city, deploying a massive ensemble model could be impractical for battery-powered chips.
 	
@@ -272,6 +299,8 @@
 	\item \textbf{Empty Prediction Sets:} The analysis revealed an average set size of less than 1 (or 100\%), meaning that some samples were receiving empty prediction sets where no class was included at all, an anomaly that should never occur in a real world scenario.
 	
 	\end{itemize}
+	
+	\subsubsection{Conclusions and Key Insights}
 	As we expected, the heavy model took more time to draw a conclusion comparing it to the decision tree, but the target class is not correctly predicted by the smaller model in the specific sample randomly selected to test, even if it only misses the grade of the air toxicity by 1. In a real world scenario, where the minority class is the most dangerous one, missclassifying it, even if only by one space difference, can cause enormous damages, even if the results are impresive given the size difference of 17kB against 13MB. Depending in the hardware, the smaller model could do the job, but if the use case  required it, the heavy model would bring more accurate results, given we optimized the hyperparameters to take the minority class more into account (with the Macro F1 Score focused optuna).
 	
 	In the case of joining classes in the predictions by conformal prediction techniques, the models demonstrated good softmax values in the majority classes, but failed to output reliable values for the minority classes (where the system was previously thought to potentially benefit from joining classes).
