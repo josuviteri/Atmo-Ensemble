@@ -40,19 +40,52 @@
 		% Abstract
 	\end{abstract}
 	
-	\section{Research Conclusions}
+	\section{Baselines and Exploratory Data Analysis}
 	
-	% Purpose and expectatives
+	\subsection{Dataset Import and Overview}
+	The analysis begins with the extraction and importation of the Air Quality and Pollution Assessment dataset. Initial data exploration confirms that the dataset contains 5,000 samples and 10 features, with a perfectly clean state: there are no missing values (0 missing cells) and no duplicated rows. 
+	
+	The variables measure different meteorological metrics such as, pollution concentrations, and geographic factors: Temperature, Humidity, \ce{PM2,5}, \ce{PM10}, \ce{NO2}, \ce{SO2}, \ce{CO}, Proximity to Industrial Areas, and Population Density.
+	
+	\subsection{Target Column Distribution and Encoding}
+	The target variable, Air Quality, is imbalanced but follows a clear structured distribution:
+	\begin{itemize}
+		\item \textbf{Good}: 2,000 samples (40.0\%)
+		\item \textbf{Moderate}: 1,500 samples (30.0\%)
+		\item \textbf{Poor}: 1,000 samples (20.0\%)
+		\item \textbf{Hazardous}: 500 samples (10.0\%)
+	\end{itemize}
+	
+	In order to prepare the data to work only with numerical algorithm, the target column was encoded into numerical values between 0 and 3 (Hazardous = 0, Poor = 1, Moderate = 2, Good = 3).
+	
+	\newpage
+	
+	\subsection{Feature Distributions by Class}
+	The average feature profile of each class was evaluated using standardised values, visualised through a heatmap and a parallel coordinates plot. 
+	
+	A clear monotonic gradient is visible across all pollution features:
+	\begin{itemize}
+		\item \texttt{Good} conditions sit clearly above the dataset mean.
+		\item \texttt{Hazardous} conditions sit firmly at the bottom of the plot.
+		\item \texttt{Poor} and \texttt{Moderate} follow the exact same pattern, being in between those extreme values.
+	\end{itemize}
+	
+	The only exception to this trend is Proximity\_to\_Industrial\_Areas, which completely changes the pattern. Since a greater distance from industry usually belongs to cleaner air, this variable shows an inverse relationship compared to the other more direct pollution measurements.
+	
+	On top of that, as we can see in the Feature Importance cell, CO2 and Proximity to industrial Areas have respectively 0.35 and 0.29 percent of weight in the definition of the target column. Therefore, in order to test sensor failure, we have randomly dropped CO2 metrics.
+	
+	Additionally, The heatmap and parallel coordinates plot show the average feature profile of each class using standardised values. A clear monotonic gradient is visible across all pollution features, \texttt{Hazardous} sits clearly above the dataset mean while \texttt{Good} sits in the bottom of the plot. With \texttt{Poor} and \texttt{Moderate} following the same pattern in between those extreme values. The only exception is \texttt{Proximity\_to\_Industrial\_Areas}, which completely changes this pattern, as more distance from industry usually corresponds to cleaner air. The parallel coordinates plot reflects this clearly, showing four well-separated lines for every feature, with the exception of the \texttt{Proximity\_to\_Industrial\_Areas} marking the highest confusion risk zone. Additionally, `Moderate` is almost flat near zero across every feature, meaning its centroid sits close to the dataset average with little changes, meaning that it is the hardest class to separate from its neighbours.
 	
 	\subsection{PCA and Dataset Feature Extraction}
-		\textit{Does studying correlated environmental features through principal component analysis (PCA) and other feature extraction techniques improve the robustness and efficiency of ensemble classifiers, or are non-linear feature interactions found by the models alone?}
-		
-			% Conclusion
-
+	\textit{Does studying correlated environmental features through principal component analysis (PCA) and other feature extraction techniques improve the robustness and efficiency of ensemble classifiers, or are non-linear feature interactions found by the models alone?}
 	
-	\subsection{Feature Importance and Interactions (XAI)}
-	\label{subsec:xai}
-	XAI context
+	To understand if dimensionality reduction benefits our predictive modelling, we have evaluated a pipeline combining Principal Component Analysis (PCA) with a Standard Scaler and a Random Forest Classifier. We have tested the model's performance, we have used Macro F1 and 5-fold cross validation to measure the results, across a varying number of PCA components, from 2 to 9. 
+	
+	The results have shown that the maximum performance with an F1-score of 0.9050 was achieved when we kept 9 components, which means that is better retaining the full dimensionality of the dataset we have. While a local performance maximum was observed at 5 components, the general trend indicated that PCA compression does not significantly improve the model's predictive ability. 
+	
+	To summarize, for ensemble classifiers like the one we used, Random Forests, PCA compression does not offer any clear benefits in this context. The model performs better when it uses all the original components, meaning that tree-based ensembles are capable of discovering complex interactions directly from the raw data. As a result, we have maintained the original feature space, but it also implies that the model's overall metrics could suffer severe changes when simulating real-world sensor errors or noise on those raw features.
+	
+	\section{Research Conclusions}
 	
 	\subsection{Ensemble Learning}
 	
