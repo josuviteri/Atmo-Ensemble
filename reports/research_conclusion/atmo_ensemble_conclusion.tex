@@ -87,6 +87,8 @@
 	
 	\section{Research Conclusions}
 	
+	
+	
 	\subsection{Ensemble Learning}
 	
 	\textit{Does the variance-reduction of parallel ensembles offer better generalization on noisy sensor data compared to the bias-reduction of sequential ensembles?}
@@ -100,17 +102,19 @@
 		\item \textbf{XGBoost}: A high-performance gradient boosting implementation featuring system optimization and regularization.
 		\item \textbf{Stacking Ensemble}: A multi-layer ensemble using a final meta-learner to blend predictions.
 	\end{itemize}
-	Because of the class imbalances in the dataset, special importance was given to the Macro F1-score alongside Accuracy, Weighted F1-Score, and the Matthews Correlation Coefficient (MCC).
+	Because of the class imbalances in the dataset, special importance was given to the Macro F1-score, but other metrics where used to understand the situation: Accuracy, Weighted F1-Score, and the Matthews Correlation Coefficient (MCC).
 	
 	\subsubsection{Parallel vs. Sequential Ensembles Performance}
-	The parallel tree ensembles, Bagging and Pasting, demonstrated strong variance reduction, achieving Macro F1-scores of 0.9240 and 0.9204, respectively. Their out-of-bag (OOB) score of 0.9504 provided a reliable estimate of model performance. However, sequential ensembles, which focus on correcting the errors of prior models, ultimately outperformed them. 
+	The parallel tree ensembles, Bagging and Pasting, gave us strong variance reduction, achieving Macro F1-scores of 0.9240 and 0.9204, respectively. Their out-of-bag (OOB) score of 0.9504 provided a trustable estimation of models performance. However, sequential ensembles, which focus on correcting the errors of previous models, outperformed them. 
 	
-	While the fine-tuned AdaBoost model reached a Macro F1 of 0.9209, Gradient Boosting achieved a higher Macro F1 of 0.9297, bypassing the parallel methods. Finally, XGBoost obtained the highest overall scores with an Accuracy of 0.9560, a Macro F1 of 0.9351, and an MCC of 0.9371. 
+	While the fine-tuned AdaBoost model reached a Macro F1 of 0.9209, Gradient Boosting achieved a higher Macro F1 of 0.9297, surpasing the parallel methods. Finally, XGBoost obtained the highest overall scores with an Accuracy of 0.9560, a Macro F1 of 0.9351, and an MCC of 0.9371. 
 	
 	\subsubsection{Key Insights and Conclusion}
-	Based on the gathered metrics, the bias-reduction approach of sequential ensembles offered better generalization on the sensor data compared to the variance-reduction of parallel ensembles. While bagging offered robustness and stability, the boosting methods, particularly XGBoost, provided the best predictive performance. 
+	Based on the obtained results, the bias-reduction approach of sequential ensembles offered better generalization on the sensor data compared to the variance-reduction of parallel ensembles. While bagging offered robustness, the boosting methods, particularly XGBoost, brought the best predictive performance. 
 	
-	Despite the strong overall performance, a key challenge was class imbalance, specifically regarding the detection of the ``Hazardous'' class. All models exhibited lower recall for this minority category, though XGBoost detected the highest proportion of dangerous cases with a recall of 0.8712. This difficulty in detecting severe pollution cases highlights the need for further techniques such as cost-sensitive learning prior to real-world deployment. Ultimately, XGBoost was selected and saved as the final model for this task.
+	Despite the strong overall performance, a class imbalanced represented a key challenge for the task, specifically for the detection of the minority class. All models resulted on lower recall values for this minority class, though XGBoost detected the highest proportion of hazardous cases with a recall of 0.8712. 
+	
+	This difficulty in detecting severe pollution cases highlights the need for other machine learning techniques, such as cost-sensitive learning, previous to a real-world deployment ready model. Lastly, XGBoost was selected as the best model and saved as the final model for this task.
 	
 	
 	\subsection{Handling Ordinality}
@@ -153,7 +157,7 @@
 	
 	% ─────────────────────────────────────────────────────────────────────────────
 	
-
+	
 	
 	\subsubsection{What the metrics tell}
 	
@@ -243,66 +247,80 @@
 	\end{itemize}
 	
 	Ultimately, explicitly modelling the ordinal nature of air quality labels via the Frank \& Hall method yielded the most robust and safety-conscious predictive performance.	
-
+	
 	\subsection{Imbalanced Learning}
 	
 	\textit{Does the variance-reduction of parallel ensembles offer better generalization on noisy sensor data compared to the bias-reduction of sequential ensembles?}
 	
+	The goal of this section is to manage the class imbalance in our air quality dataset, where some categories are less represented. 
+	
 	\subsubsection{Managing Class Imbalance}
-	An initial evaluation of the dataset's distribution confirmed a significant class imbalance. The critical "Hazardous" category was heavily underrepresented, making up only 10\% of the data. In contrast, the majority classes dominated the dataset, with the "Good" category at 40\%, "Moderate" at 30\%, and "Poor" at 20\%. This imbalance highlighted the necessity for specialized modeling approaches to ensure rare but dangerous air quality events are not ignored by the model.
+	An initial evaluation of the dataset's distribution confirmed a significant class imbalance. The critical hazardous class was underrepresented compared to other classes, making up for only 10\% of the samples. In contrast, the majority classes dominated the dataset, with the good category at 40\%, moderate at 30\%, and poor at 20\%. This imbalance gave us the need for special approaches to ensure rare but dangerous air quality samples are not ignored by the models.
 	
 	\subsubsection{Evaluation of Ensemble Methods}
-	Standard ensemble architectures, such as a baseline Random Forest, were compared against specialized methods tailored for imbalanced data, including Balanced Random Forest and RUSBoost. Imbalanced-data approaches showed mixed results: while they generally focused more on the minority class, aggressive undersampling in RUSBoost led to a reduction in overall model performance. Similarly, SMOTE-Boost struggled to maintain high accuracy on the majority classes. Ultimately, the Balanced Random Forest emerged as the strongest model in this category for accurately detecting the rare "Hazardous" cases without sacrificing too much generalized performance.
+	Standard ensemble architectures, such as a baseline Random Forest, were compared against specialized methods prepared for imbalanced data, including Balanced Random Forest and RUSBoost. Imbalanced-data approaches showed different results: 
+	
+	while they generally focused more on the minority class, aggressive undersampling in RUSBoost brought a reduction in overall performance.
+	
+	SMOTE-Boost struggled to maintain high accuracy on the majority classes too. 
+	
+	Lastly, the Balanced Random Forest appeared to be the strongest model in this task for accurately detecting the rare hazardous cases without sacrificing too much performance overall.
 	
 	\subsubsection{Algorithmic Modifications}
-	To further address the imbalance, a parallel approach to data resampling was tested using algorithmic modifications via cost-sensitive learning. This involved applying severity-based penalties for misclassifications, heavily penalizing the model for missing severe air quality events. The cost-sensitive Random Forest made good use of these penalties, successfully boosting its "Hazardous" detection rates. However, despite these improvements, it still remained behind the Balanced Random Forest in overall effectiveness.
+	To further address the imbalance, a parallel approach to data resampling was tested using algorithmic modifications via cost-sensitive learning. 
+	
+	This involved applying severity-based penalties for misclassifications, heavily penalizing the model for missing severe air quality events. The cost-sensitive Random Forest made good use of these penalties, successfully boosting its "Hazardous" detection rates. However, despite these improvements, it still remained behind the Balanced Random Forest in overall effectiveness.
 	
 	\subsubsection{Robustness Testing for Missing Data}
-	To simulate realistic real-world sensor failure conditions, a 30\% sensor dropout was introduced to evaluate how well the algorithms could handle missing values (NaNs). In this scenario, XGBoost showcased a massive advantage due to its native capacity to handle missing data. Even with the 30\% data dropout, XGBoost maintained a recall rate for the "Hazardous" class above 90\%, significantly outperforming standard Random Forest pipelines that relied on traditional data imputation strategies.
+	To simulate realistic real-world sensor failure conditions, a 30\% sensor dropout was introduced to evaluate how well the algorithms could handle missing values (NaNs). 
+	
+	In this scenario, XGBoost showcased a massive advantage due to its capacity to handle missing data. Even with the 30\% data dropout, XGBoost maintained a recall rate for the hazardous class of over 90\%, outperforming standard Random Forest pipelines that relied on traditional data imputation strategies by far.
 	
 	\subsubsection{Conclusion and key insights}
-	The research concludes that Balanced Random Forest and XGBoost stand out as ideal, complementary solutions for real-world air quality monitoring. Balanced Random Forest excels at navigating severe class imbalances to catch rare, hazardous events. Meanwhile, XGBoost guarantees reliable performance, robustness, and generalization when realistic sensor dropouts and missing data occur. Used in tandem, these models provide the necessary safety and resilience required for functional, real-world monitoring systems where detecting rare events and handling noisy data are equally vital.
+	The research concluded that Balanced Random Forest and XGBoost kept a good proposal for real-world air quality monitoring AI solutions. 
+	Balanced Random Forest worked best when put against hard class imbalance situations, being able to correctly predict under-represented classes. 
+	Meanwhile, XGBoost guaranteed reliable performance, robustness, and generalization when realistic sensor dropouts and missing data happen. Depending on the situation and the use case, these models could provide the necessary safety and resilience required for functional monitoring systems where detecting rare events and handling noisy data are equally relevant.
 	
 	
 	
 	\subsection{Semi-Supervised Learning}
-	\textbf{Subtitle}
 	
-	\textit{Pregunta}
-
+	\textit{Can semi-supervised learning reduce labeling costs while maintaining strong classification performance in air quality prediction?}
+	
+	
 	The primary goal of the experiment was to explore ways to reduce the time and cost associated with manually labeling a complete dataset by evaluating semi-supervised learning techniques. Specifically, the tasks included:
 	\begin{itemize}
-	\item \textbf{Simulating Unlabeled Data:} We partially deleted the target feature (Air Quality) in varying proportions across classes to mimic a real-world scenario where only a limited labeling budget is available.
-	
-	\item \textbf{Comparing Masking Strategies:} We implemented two different strategies for leaving data labeled:
-	
-	\item \textbf{Passive Semi-Supervision:} Pseudo-randomly masking target samples while entirely ignoring the class distribution.
-	
-	\item \textbf{Active Semi-Supervision:} Masking samples in a way that leaves the same amount of unmasked (labeled) samples from each class.
-	
-	\item \textbf{Evaluating Models:} We ran active and passive semi-supervised learning processes using models like Label Spreading and Self-Training (with a Random Forest base classifier). The unlabeled samples were treated as the test set to check how well the models could "self-train" and predict the missing labels compared to a supervised baseline.
+		\item \textbf{Simulating Unlabeled Data:} We partially deleted the target feature (Air Quality) in different proportions to mimic a real-world scenario where only a limited labeling budget is available.
+		
+		\item \textbf{Comparing Masking Strategies:} We implemented two different strategies for simulating unlabeled samples: Pasive and Active masking.
+		
+		\item \textbf{Passive Semi-Supervision:} Pseudo-randomly masking target samples without taking class distribution into account.
+		
+		\item \textbf{Active Semi-Supervision:} Masking samples in a way that leaves the same amount of labeled samples from each class, respecting the original distribution.
+		
+		\item \textbf{Evaluating Models:} We ran active and passive semi-supervised learning processes using models like Label Spreading and Self-Training (with a Random Forest base classifier). The unlabeled samples were treated as the test set to check how well the models could self-train and predict the missing labels compared to a supervised baseline.
 	\end{itemize}
 	
-	The experiment yielded several key insights regarding the effectiveness of these semi-supervised methods:
+	The experiment gave us several key insights regarding the viability of these semi-supervised methods:
 	
 	\begin{itemize}
 		\item \textbf{Self-training was consistently the strongest approach} comparing it to label spreading across all ratios, specially when labeled data was low (1 to 10\%), reaching the best accuracy and macro F1 in almost every train/test distribution.
-
+		
 		\item \textbf{Passive masking usually matched or outperformed active masking} for self training, this tells us that mantaining the original proportions in labeled samples worked well for our problem.
-
+		
 		\item \textbf{Active masking helped label spreading in low labeled sample proportion sets}, but this advantage was not mantained as the labeled sample ammount increased, still underperforming against self training.
-
+		
 		\item \textbf{More labeled data generally improved all methods}, but we need to take into account that those cases leave us with smaller test sets, with less samples to miss, and probably the majority of the set being part of the majority class, but good scores in macro f1 tell us that if a test sample was part of the minority class, it was correclty predicted too, therefore it worked well overall, even if we should take those metrics carefully.
-	
+		
 	\end{itemize}
 	
 	If the labeling budget is limited, using just 30\% to 50\% labeled data already provides strong model performance. Consequently, full dataset manual labeling can be avoided with only a minimal loss in accuracy and F1 score.
-
+	
 	
 	
 	\subsection{Efficiency vs. Accuracy in Edge Use Cases}
 	\label{subsec:efficiency}
-
+	
 	
 	
 	\textit{Can lightweight ensembles replace deep stacking for edge-based Air Quality Monitoring?}
@@ -315,9 +333,9 @@
 	
 	\begin{itemize}
 		\item \textbf{Comparing Heavy vs. Light Models:} We aimed to find the frontier between model size and performance by comparing a ``Heavy Model'' (a 3-layer Stacking Classifier with XGBoost, Random Forest, and SVM) against a ``Light Model'' (a highly pruned Decision Tree).
-	
+		
 		\item \textbf{Measuring Operational Metrics:} Rather than relying solely on traditional metrics like Accuracy and F1-Score, we explicitly measured Inference Time (in milliseconds) and Model Size (in Megabytes), as they are values that have real weight when designing an edge AI soution.
-	
+		
 		\item \textbf{Addressing Uncertainty (Conformal Prediction):} Since predicting air quality incorrectly (e.g., classifying ``Hazardous'' air as merely ``Moderate'') can lead to serious health problems, the notebook evaluated how certain the model was about its predictions. Using MAPIE (Model Agnostic Prediction Interval Estimator), we dealt with critical errors by computing coverage and average prediction set sizes for the different classes.
 	\end{itemize}
 	
@@ -325,38 +343,54 @@
 	The experiment provided crucial insights into both the deployment viability and the reliability of the models:
 	
 	\begin{itemize}
-	\item \textbf{Efficiency vs. Accuracy Trade-off:} While the Stacking Classifier (Heavy Model) achieved higher Accuracy (\~{}0.95) and Macro F1-scores (\~{}0.93) than the optimized Decision Tree (\~{}0.91 Accuracy, \~{}0.87 Macro F1), the Heavy Model was severely penalized in operational cost. It was over 826 times larger in file size (MB) and more than 120 times slower overall, during inference time compared to the lightweight Decision Tree.
-	
-	\item \textbf{Dangerous Critical Class Coverage:} During the conformal prediction analysis, the model exhibited less than 0.90 coverage on the critical ``Hazardous'' class. Specifically, the true label was missing from the prediction set roughly 32\% of the time, which is considered a dangerous failure rate for the most health-critical class.
-	
-	\item \textbf{Empty Prediction Sets:} The analysis revealed an average set size of less than 1 (or 100\%), meaning that some samples were receiving empty prediction sets where no class was included at all, an anomaly that should never occur in a real world scenario.
-	
+		\item \textbf{Efficiency vs. Accuracy Trade-off:} While the Stacking Classifier (Heavy Model) achieved higher Accuracy (\~{}0.95) and Macro F1-scores (\~{}0.93) than the optimized Decision Tree (\~{}0.91 Accuracy, \~{}0.87 Macro F1), the Heavy Model was severely penalized in operational cost. It was over 826 times larger in file size (MB) and more than 120 times slower overall, during inference time compared to the lightweight Decision Tree.
+		
+		\item \textbf{Dangerous Critical Class Coverage:} During the conformal prediction analysis, the model exhibited less than 0.90 coverage on the critical ``Hazardous'' class. Specifically, the true label was missing from the prediction set roughly 32\% of the time, which is considered a dangerous failure rate for the most health-critical class.
+		
+		\item \textbf{Empty Prediction Sets:} The analysis revealed an average set size of less than 1 (or 100\%), meaning that some samples were receiving empty prediction sets where no class was included at all, an anomaly that should never occur in a real world scenario.
+		
 	\end{itemize}
 	
 	\subsubsection{Conclusions and Key Insights}
 	As we expected, the heavy model took more time to draw a conclusion comparing it to the decision tree, but the target class is not correctly predicted by the smaller model in the specific sample randomly selected to test, even if it only misses the grade of the air toxicity by 1. In a real world scenario, where the minority class is the most dangerous one, missclassifying it, even if only by one space difference, can cause enormous damages, even if the results are impresive given the size difference of 17kB against 13MB. Depending in the hardware, the smaller model could do the job, but if the use case  required it, the heavy model would bring more accurate results, given we optimized the hyperparameters to take the minority class more into account (with the Macro F1 Score focused optuna).
 	
 	In the case of joining classes in the predictions by conformal prediction techniques, the models demonstrated good softmax values in the majority classes, but failed to output reliable values for the minority classes (where the system was previously thought to potentially benefit from joining classes).
-	 
+	
 	Therefore, even if the models had small issues when predicting the minority class, the misclassifications being just 1 class appart from the true value, we believe that these are great results given the weights and the inference time of the models, heavy and small, and depending on the hardware used for deployment, we could select the most suitable one.
-	
 
-
-	\section{Limitations and Discovery}
-	% Most common problems found
-
-		\subsection{Limitations and Data Drift}
-		% How the model might degrade over seasons or due to sensor aging.
-	
 
 	\section{Ethical and Social Implications}
-	% How our problem helps society
-		
-		\subsection{Risk Assesment and Public Health}
-		% Impact of False Negatives in hazardous event detection.}
+	
+	The main purpose of this project is to support safer and more informed air quality monitoring. In that sense, the potential social value is significant: a reliable classifier can help public safety, environmental agents, and citizens overall, supporting faster reactions to dangerous pollution events. However, as this task is directly related to human health, the model must be treated as a decision-support tool rather than a replacement for expert judgement.
+	
+	\subsection{Risk Assessment and Public Health}
+	
+	The most important ethical risk in this problem is a false negative on the \texttt{Hazardous} class. Misclassifying dangerous air as \texttt{Moderate} or \texttt{Good} could turn out to protective actions, expose vulnerable populations to the danger of industrial toxines, and reduce trust in automated systems. For this reason, the project prioritised Macro F1 and other minority-class focused metrics, rather than accuracy alone.
+	
+	Because of this situation, the analysis is emphasised on severe error rate, ordinal consistency, robustness under noise, class imbalance, and missing sensor readings. In practice, a model used in deployment should be calibrated with caution, especially when used to predict classes near to the hazardous boundary.
+	
+	\subsection{Fairness, Reliability, and Dataset Limitations}
+	
+	Although the dataset is clean and well-structured, it may not fully represent the complexity of real-world environments. Real monitoring systems can be affected by seasonal effects, sensor drift, regional differences, maintenance issues, and unobserved variables such as weather patterns or local emissions spikes. As a result, strong performance on this dataset does not promise equivalent behaviour in operational settings.
+	
+	Another limitation is that the class distribution is highly imbalanced. Even though the models were evaluated with metrics that take imbalanceness into account, the minority class remains harder to understand and predict. This creates an ethical challenge: a model can appear highly accurate on paper while still failing on the most critical cases. For this reason, any future deployment should include additional checks prior to real integration, such as cost-sensitive training, calibration checks, and continuous monitoring of minority-class recall.
+	
 
 	
-	\section{Summary and Next Steps}
-	% Summary and next steps
+	\subsection{Final Ethical Reflection}
+	
+	Overall, this work can contribute positively to environmental monitoring and public safety, but only if it is used carefully. The ethical objective is not simply to maximise predictive performance, but to minimise harmful mistakes, especially in the hazardous class.
+	
+	\section{Conclusion Summary}
+	
+	This project explored management of imbalanced datasets on ensemble models for air quality prediction tasks, from multiple machine learning perspectives. Across the different experiments, the dataset proved to be highly structured and relatively easy to segment, which led to strong overall results for most models.
+	
+	The exploratory analysis showed clear class-dependent patterns we were able to find, with strong monotonic trends across the target categories. PCA did not improve performance, suggesting that tree-based ensembles were already able to exploit the full raw feature space effectively. In the ensemble comparison, sequential methods outperformed parallel ones, and XGBoost achieved the best overall balance of Accuracy, Macro F1, and MCC. This made it the final selected model for the main classification task.
+	
+	When ordinality was explicitly modelled, the Frank \& Hall approach was the most consistent ordinal method, although the advantage over standard multi-class learning was minimal on clean data. Under increasing noise, ordinal modelling showed some benefits at moderate perturbation levels, but the three approaches got to the same level at the end.
+	
+	For imbalanced learning, Balanced Random Forest and XGBoost stood out as the most useful approaches for ensuring minority-class focused performance. In semi-supervised learning, self-training performed best, showing that a limited annotation budget can still produce strong results. In the efficiency study, the lightweight tree model was far more practical for edge deployment on embedded systems, but the heavier stacking model achieved better predictive quality, more suitable for more powerful devices. Conformal prediction also revealed an important limitation: uncertainty handling for the hazardous class was not yet reliable enough for safety-critical use, therefore, not a suitable technique for our task.
+	
+	In summary, the project shows that ensemble machine learning techniques can model air quality effectively, but the best approach depends on the goal. If maximum predictive performance is required, XGBoost is the strongest option. If deployment restrictions represent a great limitation, a lightweight model may be preferable, although at some cost in accuracy. Future work should focus on more complete datasets, at least mantaining a minimum ratio of 10\% on the minority class, stronger ordinal methods, cost-sensitive learning, and more realistic noise and missing-data scenarios before any practical deployment.
 	
 \end{document}
